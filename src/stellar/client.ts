@@ -1,7 +1,5 @@
-import StellarSdk from '@stellar/stellar-sdk';
+import StellarSdk, { Horizon, Keypair, TransactionBuilder, Networks, Operation, Asset, BASE_FEE, Memo } from '@stellar/stellar-sdk';
 import { config, getNetworkPassphrase } from '../config';
-
-const { Horizon, Keypair, TransactionBuilder, Networks, Operation, Asset, BASE_FEE, Memo } = StellarSdk;
 
 const server = new Horizon.Server(config.horizonUrl, {
   allowHttp: config.horizonUrl.startsWith('http://'),

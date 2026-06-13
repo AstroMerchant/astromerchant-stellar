@@ -33,14 +33,14 @@ export async function verifyTransaction(
   stellarTxHash: string
 ): Promise<VerifyTransactionResult> {
   try {
-    const tx = await getServer().transactions().transaction(stellarTxHash).call();
+    const tx = await getServer().transactions().transaction(stellarTxHash).call() as any;
 
     const operations = await getServer()
       .operations()
       .forTransaction(stellarTxHash)
       .call();
 
-    const paymentOps = operations.records.filter(
+    const paymentOps = (operations.records as any[]).filter(
       (op: any) => op.type === 'payment'
     );
 
@@ -56,7 +56,7 @@ export async function verifyTransaction(
       };
     }
 
-    const paymentOp = paymentOps[0];
+    const paymentOp = paymentOps[0] as any;
 
     const assetType = paymentOp.asset_type === 'native' ? 'XLM' : paymentOp.asset_code || 'XLM';
 
@@ -106,8 +106,8 @@ export async function watchIncomingPayments(
           callback(payment);
         }
       },
-      onerror: (error: Error) => {
-        console.error(`Stream error for ${merchantPublicKey}:`, error.message);
+      onerror: (error: any) => {
+        console.error(`Stream error for ${merchantPublicKey}:`, error.message || error);
       },
     });
 
@@ -126,9 +126,9 @@ export async function sendSettlement(
     const sourceKeypair = Keypair.fromSecret(sourceSecretKey);
     const sourcePublicKey = sourceKeypair.publicKey();
 
-    const sourceAccount = await getServer().loadAccount(sourcePublicKey);
+    const sourceAccount = await (getServer() as any).loadAccount(sourcePublicKey);
 
-    let asset: Asset;
+    let asset;
     if (assetCode.toUpperCase() === 'XLM') {
       asset = Asset.native();
     } else {
@@ -162,7 +162,7 @@ export async function sendSettlement(
 
     transaction.sign(sourceKeypair);
 
-    const result = await getServer().submitTransaction(transaction);
+    const result = await (getServer() as any).submitTransaction(transaction);
 
     return {
       success: true,

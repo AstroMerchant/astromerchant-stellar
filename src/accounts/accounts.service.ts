@@ -53,9 +53,9 @@ export async function getAccountInfo(publicKey: string): Promise<AccountInfo> {
       publicKey: account.accountId(),
       balances,
       sequenceNumber: account.sequenceNumber(),
-      numSubentries: account.numSubentries(),
-      inflationDestination: account.inflationDestination || undefined,
-      homeDomain: account.homeDomain || undefined,
+      numSubentries: (account as any).num_subentries,
+      inflationDestination: (account as any).inflation_destination || undefined,
+      homeDomain: (account as any).home_domain || undefined,
     };
   } catch (error) {
     if (error instanceof Error) {

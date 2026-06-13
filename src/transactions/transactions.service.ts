@@ -7,12 +7,14 @@ export async function getTransaction(
   try {
     const tx = await getServer().transactions().transaction(txHash).call();
 
+    const tx2 = tx as any;
+
     const operations = await getServer()
       .operations()
       .forTransaction(txHash)
       .call();
 
-    const paymentOps = operations.records.filter(
+    const paymentOps = (operations.records as any[]).filter(
       (op: any) => op.type === 'payment'
     );
 
@@ -30,16 +32,16 @@ export async function getTransaction(
     }
 
     return {
-      hash: tx.hash,
-      type: tx.type || 'payment',
+      hash: tx2.hash,
+      type: tx2.type || 'payment',
       amount,
       asset,
       from,
       to,
-      memo: tx.memo || '',
-      status: tx.successful ? 'success' : 'failed',
-      createdAt: tx.created_at,
-      ledger: tx.ledger,
+      memo: tx2.memo || '',
+      status: tx2.successful ? 'success' : 'failed',
+      createdAt: tx2.created_at,
+      ledger: tx2.ledger,
     };
   } catch (error) {
     if (error instanceof Error) {
@@ -61,7 +63,7 @@ export async function getRecentTransactions(
       .order('desc')
       .call();
 
-    const paymentOps = operations.records.filter(
+    const paymentOps = (operations.records as any[]).filter(
       (op: any) => op.type === 'payment'
     );
 
@@ -125,7 +127,7 @@ export async function isTransactionSuccessful(
   txHash: string
 ): Promise<boolean> {
   try {
-    const tx = await getServer().transactions().transaction(txHash).call();
+    const tx = await getServer().transactions().transaction(txHash).call() as any;
     return tx.successful === true;
   } catch (error) {
     return false;

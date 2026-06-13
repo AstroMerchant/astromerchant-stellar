@@ -5,7 +5,7 @@ export async function submitTransaction(
   envelopeXdr: string
 ): Promise<{ hash: string; ledger: number }> {
   try {
-    const result = await getServer().submitTransaction(envelopeXdr);
+    const result = await (getServer() as any).submitTransaction(envelopeXdr);
     return {
       hash: result.hash,
       ledger: result.ledger,
@@ -49,8 +49,8 @@ export async function streamPayments(
           onPayment(payment);
         }
       },
-      onerror: (error: Error) => {
-        console.error(`Stream error for ${publicKey}:`, error.message);
+      onerror: (error: any) => {
+        console.error(`Stream error for ${publicKey}:`, error.message || error);
       },
     });
 
@@ -76,7 +76,7 @@ export async function getOperations(
 
     return {
       operations: result.records,
-      nextCursor: result._next?.cursor || '',
+      nextCursor: (result as any)._next?.cursor || '',
     };
   } catch (error) {
     if (error instanceof Error) {
@@ -88,7 +88,7 @@ export async function getOperations(
 
 export async function getLatestLedger(): Promise<number> {
   try {
-    const root = await getServer().root();
+    const root = await (getServer() as any).root();
     return root.horizon_sequence || 0;
   } catch (error) {
     if (error instanceof Error) {
